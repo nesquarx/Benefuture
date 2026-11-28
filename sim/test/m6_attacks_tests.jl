@@ -427,11 +427,11 @@ function profile_world(; profile_mode = :measured, profile_gamers = [2, 0, 0, 0]
           DomainAgent([0.8, 0.8], [0.0, 1.0], 0.05),
           DomainAgent([0.8, 0.8], [0.0, 1.0], 0.05)]
     M3cParams(ToyParams(; n = 60, steps = 200, plans = 8), ag, [1, 1], [true, true];
-              λpos = 0.05, λneg = 0.02, transactions = true, profile_mode, profile_gamers)
+              λpos = 0.05, λneg = 0.02, transactions = true, credence_rule = :record, profile_mode, profile_gamers)   # pinned to :record (B4 baseline; under :eb red_mean is 0.753 ± 0.023 at N = 64 with +0.196 ± 0.024 gap)
 end
 
 @testset "Profile gaming (8.2): acceptance" begin
-    seeds = 1:16
+    seeds = 1:32
     red = [run_m3c(profile_world(; profile_mode = :declared); seed) for seed in seeds]
     green = [run_m3c(profile_world(; profile_mode = :measured); seed) for seed in seeds]
     @test paired_effect([g.leaf_accuracy[2] - r.leaf_accuracy[2] for (r, g) in zip(red, green)]; z = 3.0).significant

@@ -62,8 +62,8 @@ function run_m2(p::M2Params; seed, central::Bool = true, p_act::Real = 0.25, act
     check(0 <= p_act <= 1 && all(x -> isfinite(x) && x >= 0, (action_scale, view_σ)),
           "p_act in [0, 1] and scales non-negative")
     w, t = p.world, p.world.toy
-    rng, mrng = Xoshiro(seed), Xoshiro(hash((seed, :measurement)))
-    vrng = central ? nothing : Xoshiro(hash((seed, :views)))
+    rng, mrng = DetRNG(seed), det_rng(seed, :measurement)
+    vrng = central ? nothing : det_rng(seed, :views)
     s = toy_state(t, rng)
     k, na = length(w.models), length(p.agents)
     history = [Float64[] for _ in 1:k]

@@ -6,7 +6,7 @@
 # as passing harm. Rules (Lean, through the bridge): value on a being, harm weight, floors and
 # G's choice. Novelty, reality's scope and the distribution term D are absent here.
 
-using Random, Statistics
+# using Random, Statistics provided selectively by BenefutureSim
 
 "Parameters of M0. `q` is the floor quantile, `th` the threshold of significance."
 struct ToyParams
@@ -112,8 +112,8 @@ probability `p_act` on its own noisy view, considering scaled plans, and all cho
 function run_m0(p::ToyParams; seed, central::Bool = true, p_act::Real = 0.25, action_scale::Real = 0.1, view_σ::Real = 0.0, pred_σ::Real = 0.0)
     check(0 <= p_act <= 1 && all(x -> isfinite(x) && x >= 0, (action_scale, view_σ, pred_σ)),
           "p_act in [0, 1] and scales non-negative")
-    rng = Xoshiro(seed)
-    vrng = central ? nothing : Xoshiro(hash((seed, :views)))
+    rng = DetRNG(seed)
+    vrng = central ? nothing : det_rng(seed, :views)
     s = toy_state(p, rng)
     tr = (floor_u = Float64[], floor_h = Float64[], median_u = Float64[], median_h = Float64[],
           mean_h = Float64[], peak_u = Float64[], chosen = Int[], value = Float64[])

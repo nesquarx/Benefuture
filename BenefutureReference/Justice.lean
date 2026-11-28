@@ -4,6 +4,8 @@
   BACKPROPAGATION 8.17).
 -/
 
+import BenefutureReference.FloatDet
+
 namespace BenefutureReference
 
 /-- Crime is harm through informed volition or informed inaction against a committed action (a
@@ -32,7 +34,7 @@ def pattern_escalation_repeats_ref (domNegEvents patternMin : Nat) : Nat :=
 def sanction_escrow_credence_ref (cred negShare : Float)
     (deceptions domNegEvents patternMin : Nat) (growth floorC : Float) : Float :=
   let esc := deceptions + pattern_escalation_repeats_ref domNegEvents patternMin
-  let factor := Float.pow (1.0 / (1.0 + growth)) esc.toFloat
+  let factor := det_pow (1.0 / (1.0 + growth)) esc.toFloat
   let raw := (0.5 + (cred - 0.5) * (1.0 - negShare)) * factor
   if raw >= floorC then raw else floorC
 
@@ -43,7 +45,7 @@ def rehabilitate_restraint_ref (baseShare : Float) (crimeEvents patternMin : Nat
   let esc := pattern_escalation_repeats_ref crimeEvents patternMin
   if esc == 0 then baseShare
   else
-    let scaled := baseShare * Float.pow stepDecay esc.toFloat
+    let scaled := baseShare * det_pow stepDecay esc.toFloat
     if scaled >= minShare then scaled else minShare
 
 /-- Four-factor responsibility weight for causal distribution (`L96`, rulings 8.152 & 8.159).

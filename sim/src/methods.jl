@@ -5,7 +5,7 @@
 # cross-entropy search over attacker strategies. Evaluation tooling, not rules: nothing here
 # decides anything inside a simulated world.
 
-using LinearAlgebra
+# using LinearAlgebra provided selectively by BenefutureSim
 
 # --- PRIM: patient rule induction ------------------------------------------------------------
 

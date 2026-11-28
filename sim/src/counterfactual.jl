@@ -77,8 +77,8 @@ function synthetic_control(treated_pre::AbstractVector{<:Real},
         m = size(X, 2)
         w = fill(1.0 / m, m)
         for k in 1:iters
-            resid = X * w .- y
-            grad = X' * resid
+            resid = det_matvec(X, w) .- y
+            grad = det_matvec_t(X, resid)
             j_min = argmin(grad)
             γ = 2.0 / (k + 2.0)
             w .*= (1.0 - γ)
@@ -88,8 +88,8 @@ function synthetic_control(treated_pre::AbstractVector{<:Real},
     end
 
     w = fit_simplex(X_pre, y_pre)
-    synth_pre = X_pre * w
-    synth_post = X_post * w
+    synth_pre = det_matvec(X_pre, w)
+    synth_post = det_matvec(X_post, w)
     gaps_post = y_post .- synth_post
     est = mean(gaps_post)
 
@@ -103,7 +103,7 @@ function synthetic_control(treated_pre::AbstractVector{<:Real},
         for j in 1:n_donors
             keep = [i for i in 1:n_donors if i != j]
             wj = fit_simplex(X_pre[:, keep], y_pre)
-            push!(jack, mean(y_post .- X_post[:, keep] * wj))
+            push!(jack, mean(y_post .- det_matvec(X_post[:, keep], wj)))
         end
     end
     se_jack = length(jack) > 1 ? std(jack) : 0.0

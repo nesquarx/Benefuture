@@ -4,6 +4,8 @@
   A parameter vector is an array in the order of `paramFields`, mirroring `ParamVector`.
 -/
 
+import BenefutureReference.FloatDet
+
 namespace BenefutureReference
 
 /-- Field order of a parameter vector, as in `ParamVector`. -/
@@ -49,7 +51,7 @@ def select_candidate_ref (means ses : Array Float) (z : Float) : Nat := Id.run d
   for i in [1:means.size] do
     if means.getD i 0.0 > means.getD best 0.0 then best := i
   let gap := means.getD best 0.0 - means.getD 0 0.0
-  let se := Float.sqrt (ses.getD best 0.0 ^ 2 + ses.getD 0 0.0 ^ 2)
+  let se := Float.sqrt (sq (ses.getD best 0.0) + sq (ses.getD 0 0.0))
   if best != 0 && gap > z * se then best else 0
 
 /-- Gauging a threshold's freedom range (8.22): harm found within the perturbation radius (a

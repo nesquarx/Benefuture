@@ -14,7 +14,7 @@
 # per decision, a common period shock that confounds comparisons across time, a shared misconception `bias` per class (8.42.3 monoculture),
 # reserves that grow and shrink by outcomes at a fixed `mint_rate`.
 
-using Random, Statistics
+# using Random, Statistics provided selectively by BenefutureSim
 
 """
     FractalParams
@@ -52,7 +52,7 @@ end
 
 "The world's draws, one set per seed, shared by every arm (common random numbers): truth of each class, origins, period shocks, readings, outcome noise."
 function fractal_world(n::Integer, p::FractalParams; seed::Integer)
-    rng = Xoshiro(hash((seed, :fractal_world)))
+    rng = det_rng(seed, :fractal_world)
     K = length(p.severity)
     (τ = [rand(rng) < 0.5 ? 1 : -1 for _ in 1:K], origin = [rand(rng, 1:n) for _ in 1:p.decisions], shock = randn(rng, p.decisions),
      eps = randn(rng, p.decisions, n), eta = randn(rng, p.decisions, n), order = [randperm(rng, 64) for _ in 1:p.decisions])

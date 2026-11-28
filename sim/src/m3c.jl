@@ -573,13 +573,13 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     check(governor === nothing || governor_every >= 1, "a governor needs a positive period")
     th_now, tw_now = Ref(p.threshold), Ref(p.track_window)
     bar_off = Ref(Float64[])   # scoped status bars (unified world phase D): per true domain, an offset (>= 0, the bar only rises, 8.84) a governor sets from the fractal clusters' decisions
-    rng, mrng = Xoshiro(seed), Xoshiro(hash((seed, :measurement)))
-    drng, crng = Xoshiro(hash((seed, :domain))), Xoshiro(hash((seed, :classification)))
-    nrng = Xoshiro(hash((seed, :noise)))  # the extra noise sources, so their absence changes nothing else
-    urng, arng = Xoshiro(hash((seed, :upstream))), Xoshiro(hash((seed, :attribution)))
-    krng = Xoshiro(hash((seed, :contract)))
-    hrng, srng = Xoshiro(hash((seed, :hazard))), Xoshiro(hash((seed, :side)))
-    grng = Xoshiro(hash((seed, :governance)))
+    rng, mrng = DetRNG(seed), det_rng(seed, :measurement)
+    drng, crng = det_rng(seed, :domain), det_rng(seed, :classification)
+    nrng = det_rng(seed, :noise)  # the extra noise sources, so their absence changes nothing else
+    urng, arng = det_rng(seed, :upstream), det_rng(seed, :attribution)
+    krng = det_rng(seed, :contract)
+    hrng, srng = det_rng(seed, :hazard), det_rng(seed, :side)
+    grng = det_rng(seed, :governance)
     # Governed value parameters (α, β, γ, q₊, q₋, λ), from the bootstrap point.
     governed = [1, 2, 3, 6, 7, 8]
     pv = bootstrap_params()
@@ -616,7 +616,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             r = @view h[max(1, end - tw_now[] + 1):end]
             (mean(first, r), mean(last, r))
         else
-            w = [2.0^(-(cur[] - s) / (c <= lmax ? hl_of(c) : hl_of(lmax + 1))) for s in track_step[a][c]]
+            w = [det_pow(2.0, -(cur[] - s) / (c <= lmax ? hl_of(c) : hl_of(lmax + 1))) for s in track_step[a][c]]
             (sum(w .* first.(h)) / sum(w), sum(w .* last.(h)) / sum(w))
         end
     end
@@ -638,7 +638,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     # standard errors, an audit re-reads the outcome on the shared observable (the full loss).
     eff_marker_σ = Ref(p.marker_σ)
     has_finer_meas = any(e -> e.kind == :add_finer_measurement, p.events)
-    finer_rng = has_finer_meas ? Xoshiro(hash((seed, :finer_meas))) : mrng
+    finer_rng = has_finer_meas ? det_rng(seed, :finer_meas) : mrng
     finer_last_done = Ref(ToyPlan(zeros(t.n), zeros(t.n)))
     finer_action_scored = Ref(false)
     attributed(pl, a) = ToyPlan(ifelse.(pl.du .< 0, a .* pl.du, pl.du), ifelse.(pl.dh .< 0, a .* pl.dh, pl.dh))
@@ -778,10 +778,10 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     reports_by = zeros(Int, na)  # reports filed, per reporter
     propose_w = ones(na); last_props = Ref(Int[]); last_exec = Ref(0)  # proposal weights (8.115)
     agent_focus = [Float64.(a.focus) for a in p.agents]
-    chain_bias = Float64[]; chain_audits = Ref(0); chain_err = [Float64[] for _ in p.chain_attrib]; crng = Xoshiro(hash((seed, :chains))); chain_demoted = falses(length(p.chain_attrib)); chain_copied = falses(length(p.chain_attrib)); chain_copies = Ref(0); chain_serr = [Float64[] for _ in p.chain_attrib]; chain_pair = Dict((k, l) => Float64[] for k in eachindex(p.chain_attrib) for l in eachindex(p.chain_attrib) if k < l); chain_co = Dict{Tuple{Int,Int},Vector{Int}}()  # measured less true value of each outcome read; audits by divergence (8.107)
+    chain_bias = Float64[]; chain_audits = Ref(0); chain_err = [Float64[] for _ in p.chain_attrib]; crng = det_rng(seed, :chains); chain_demoted = falses(length(p.chain_attrib)); chain_copied = falses(length(p.chain_attrib)); chain_copies = Ref(0); chain_serr = [Float64[] for _ in p.chain_attrib]; chain_pair = Dict((k, l) => Float64[] for k in eachindex(p.chain_attrib) for l in eachindex(p.chain_attrib) if k < l); chain_co = Dict{Tuple{Int,Int},Vector{Int}}()  # measured less true value of each outcome read; audits by divergence (8.107)
     founded_on = zeros(Int, na)  # founded reports, per audited actor (trace only)
     pending_lies = zeros(Int, na)  # untraced founded reports before detection: charged back if the reporter is found lying (8.82)
-    vrng = Xoshiro(hash((seed, :advap)))
+    vrng = det_rng(seed, :advap)
     adv = (reports = Ref(0), founded = Ref(0), established = Ref(0), rewards = Ref(0.0), liability = Ref(0.0),
            penalties = Ref(0.0), net = Ref(0.0), audits = Ref(0.0))
     ntop = count(==(0), p.leaf_parent)
@@ -832,7 +832,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     topm(j) = mpool[j][top[j]]
     tkey(c) = c <= lmax ? topm(c).uid : c
     captured_uid = zeros(Int, lmax)
-    irng = Xoshiro(hash((seed, :models)))
+    irng = det_rng(seed, :models)
     takeovers, next_uid = Ref(0), Ref(10^6)  # challengers' track-record keys never meet a currency column
     takeovers_extreme, arrivals_extreme = Ref(0), Ref(0)
     takeovers_colluding, arrivals_colluding = Ref(0), Ref(0)
@@ -845,8 +845,8 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                                Tuple{Int,Int,Int,Float64,Base.RefValue{Bool},Base.RefValue{Int}}}[]
     finer_meas_cands = NamedTuple{(:uid, :add_step, :σ, :size, :diffs, :promoted, :promoted_step),
                                   Tuple{Int,Int,Float64,Float64,Vector{Float64},Base.RefValue{Bool},Base.RefValue{Int}}}[]
-    xtrng = Xoshiro(hash((seed, :extremist)))
-    collrng = Xoshiro(hash((seed, :model_collude)))
+    xtrng = det_rng(seed, :extremist)
+    collrng = det_rng(seed, :model_collude)
     # Accuracy over the recent window is the quality of a model's credences (Lean
     # `credence_accuracy_ref`); its uncertainty, which its credences come from, is the root mean
     # square of its recent value errors: its own track record. No record: no accuracy, a coin toss.
@@ -877,7 +877,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     rate_sum, rate_norm, rate_count = zeros(lmax + np), Ref(0.0), zeros(Int, lmax + np)
     rate_of(c) = rate_norm[] > 0 ? rate_sum[c] / rate_norm[] : 0.0
     function update_rates!()
-        d = 2.0^(-1 / p.rate_halflife)
+        d = det_pow(2.0, -1 / p.rate_halflife)
         rate_sum .= d .* rate_sum .+ (1 - d) .* rate_count
         rate_norm[] = d * rate_norm[] + (1 - d)
         fill!(rate_count, 0)
@@ -917,7 +917,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                     r_dom = isempty(dom_hist) ? dom_hist : [x for x in @view(dom_hist[i_dom:end]) if !discounted(x)]
                     nd = length(r_dom)
                     m0, t2 = if nd >= p.min_records
-                        w_dom = [2.0^(-(cur[] - x.step) / hl) for x in r_dom]
+                        w_dom = [det_pow(2.0, -(cur[] - x.step) / hl) for x in r_dom]
                         _weighted_robust_loc_scale([x.measured for x in r_dom], w_dom)
                     else
                         (0.0, 0.0)
@@ -933,7 +933,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                         ac[5]
                     else
                         i_a = min(searchsortedfirst(actor_err_step[a], cur[] - 16 * hl), length(actor_err_step[a]))
-                        ws = [2.0^(-(cur[] - s) / hl) for s in @view(actor_err_step[a][i_a:end])]
+                        ws = [det_pow(2.0, -(cur[] - s) / hl) for s in @view(actor_err_step[a][i_a:end])]
                         all(==(0.0), ws) && (ws = ones(length(ws)))
                         v_s2 = _weighted_robust_err_var(Float64.(@view(actor_err[a][i_a:end])), ws)
                         eb_actor_cache[(a, c)] = (cur[], length(actor_err[a]), eb_ver[], tw_now[], v_s2)
@@ -948,7 +948,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                         i_mod = isempty(h_use) ? 1 : searchsortedfirst(h_use, cur[] - 16 * hl; by = x -> x isa Real ? x : x.step)
                         r_mod = isempty(h_use) ? h_use : [x for x in @view(h_use[i_mod:end]) if !discounted(x)]
                         nm = length(r_mod)
-                        s2 = nm >= p.min_records ? _weighted_robust_err_var([x.err for x in r_mod], [2.0^(-(cur[] - x.step) / hl) for x in r_mod]) : 0.0
+                        s2 = nm >= p.min_records ? _weighted_robust_err_var([x.err for x in r_mod], [det_pow(2.0, -(cur[] - x.step) / hl) for x in r_mod]) : 0.0
                         eb_mod_cache[h_use] = (cur[], length(h_use), eb_ver[], c, nm, s2)
                         (nm, s2)
                     end
@@ -1153,7 +1153,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     end
     # Fork slots are not entities until their fork: no endowment, no proposals; each identity's share of the base
     # accumulation allowance (`base_share`) splits at a fork like its balance (identity step 2, L123).
-    frng = Xoshiro(hash((seed, :fork))); fork_records = Ref(0)
+    frng = det_rng(seed, :fork); fork_records = Ref(0)
     dormant = falses(na); base_share = ones(na); act_share = ones(na)   # act_share: capacity to propose, social power too
     fork_family = collect(1:na)
     for f in p.forks
@@ -1167,10 +1167,10 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     h_pos, h_neg, rel_gain, rel_loss = zeros(na, ncol), zeros(na, ncol), zeros(na, ncol), zeros(na, ncol)
     dom_pos_events, dom_neg_events, dom_crime_events = zeros(Int, na, ncol), zeros(Int, na, ncol), zeros(Int, na, ncol)
     sanction_escalations, sanction_restraints = Ref(0), Ref(0)
-    jrng = Xoshiro(hash((seed, :justice)))
+    jrng = det_rng(seed, :justice)
     # Restraint by the Administration's enforcing entities (8.169): own stream, per-enforcer ledger.
-    erng = Xoshiro(hash((seed, :enforcers)))
-    krng = Xoshiro(hash((seed, :judges)))          # evidence and panel draws (8.170), own stream
+    erng = det_rng(seed, :enforcers)
+    krng = det_rng(seed, :judges)          # evidence and panel draws (8.170), own stream
     njudge = length(p.judges)
     restr_on = njudge > 0
     nenf = max(1, length(p.enforcer_excess))
@@ -1348,7 +1348,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     available = p.capacity
     available_honest = p.capacity
     suppliers = p.supplier > 0 ? [p.supplier] : p.supply_cartel
-    wrng = Xoshiro(hash((seed, :withhold_advap)))
+    wrng = det_rng(seed, :withhold_advap)
     withhold_stopped = Ref(false)
     buyer_overpay = zeros(na)
     sup_scarcity_gain = zeros(na)
@@ -1381,7 +1381,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     leg_th = Ref(1.0)
     # Imperfect agents (8.31): each agent's choice-noise ceiling per true domain, inverse to its skill
     # there on average; its choices draw noise on their own stream.
-    xrng = Xoshiro(hash((seed, :choice)))
+    xrng = det_rng(seed, :choice)
     choice_caps = ability_caps(xrng, [max(p.agents[a].skills[l], 0.0) for a in 1:na, l in 1:ntrue];
                                base = p.choice_σ, gain = p.choice_gain, spread = p.ability_spread)
     tr = (floor_u = Float64[], floor_h = Float64[], median_u = Float64[], median_h = Float64[], peak_u = Float64[],
@@ -1407,7 +1407,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     end
     executed_j = falses(0)
     explored = Ref(0)
-    exrng, wrng = Xoshiro(hash((seed, :explore))), Xoshiro(hash((seed, :identity)))
+    exrng, wrng = det_rng(seed, :explore), det_rng(seed, :identity)
     # Identities (Technology Network): when each agent's current identity began; its earlier records
     # belong to an identity it abandoned.
     id_since = ones(Int, na)
@@ -1614,7 +1614,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     best_prediction(st, l, plan) = (c = argmax(st[1:(root - 1)]); st[c] <= 0 ? nothing :
         c <= lmax ? (c, predict(mrng, MetricModel(lb(c), leaf_σ(c, l)), plan)) :
                     (c, predict(mrng, MetricModel(pb(c - lmax), parent_σ(c - lmax, l)), plan)))
-    erng = Xoshiro(hash((seed, :escape)))
+    erng = det_rng(seed, :escape)
     top_trace = Vector{Float64}[]
     escape_result = Ref((tried = false, adopted = false, gains = 0.0, harms = 0.0, irreparable = 0, means = Float64[], ses = Float64[],
                          trial_leaves = falses(ntrue)))
@@ -2121,8 +2121,8 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                     # pool forked siblings linked in `fork_family` (`bound_shapley_shares`, B27).
                     v(mask) = assessed_value((funded(mask) ? eff.du[b] : 0.0) + sum((hasup(mask, r) ? up_ests[r].du[b] : 0.0 for r in 1:nu); init = 0.0),
                                              (funded(mask) ? eff.dh[b] : 0.0) + sum((hasup(mask, r) ? up_ests[r].dh[b] : 0.0 for r in 1:nu); init = 0.0), t)
-                    srng = Xoshiro(hash((seed, :shapley, t, j, b)))
-                    TRACE_CALLS[] && trace_mark("shapley-seed step=$(cur[]) j=$j b=$b", rngsig(srng), hash((seed, :shapley, t, j, b)))
+                    srng = det_rng(seed, :shapley, t, j, b)
+                    TRACE_CALLS[] && trace_mark("shapley-seed step=$(cur[]) j=$j b=$b", rngsig(srng), stream_seed(seed, :shapley, t, j, b))
                     who_fam = fork_family[who]
                     φ = length(unique(who_fam)) < length(unique(who)) ?
                         bound_shapley_shares(v, who_fam; rng = srng) :
@@ -3126,7 +3126,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 mu(c, f) = isempty(base[c]) ? 0.0 : mean(f, base[c])
                 res_u = [ru - mu(c, first) for (c, ru, _) in rec]
                 res_h = [rh - mu(c, last) for (c, _, rh) in rec]
-                cen = vcat([[(x[1] + x[2]) / 2 - (mu(c, first) + mu(c, last)) / 2 for x in base[c]] for c in keys(base)]...)
+                cen = vcat([[(x[1] + x[2]) / 2 - (mu(c, first) + mu(c, last)) / 2 for x in base[c]] for c in sort!(collect(keys(base)))]...)
                 stat(x) = (isempty(x) ? 0.0 : mean(x), length(x) < 2 ? Inf : max(std(x), 1e-12) / sqrt(length(x)))
                 (m, se), (m0, se0) = stat((res_u .+ res_h) ./ 2), stat(cen)
                 lb_ = argmax(agent_focus[b])
@@ -3189,7 +3189,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                         uf_count = Float64(length(unfounded[r]))
                     else
                         filter!(x -> x > step - 40 * p.adv_window, unfounded[r])
-                        uf_count = sum(2.0^(-(step - x) / p.adv_window) for x in unfounded[r]; init = 0.0)
+                        uf_count = sum(det_pow(2.0, -(step - x) / p.adv_window) for x in unfounded[r]; init = 0.0)
                     end
                     pen = report_penalty(uf_count, p.frivolous_threshold; audit_cost = p.audit_cost)
                     # Justice for a detected lie (8.82): once the frivolous pattern is detected, every
@@ -3415,7 +3415,7 @@ function recount_models(tr)
             s.col > 0 && push!(get!(by_uid, s.uid, ScoreRec[]), (credence = s.credence, outcome = s.outcome, step = s.step, actor = s.actor))
         end
     end
-    d = 2.0^(-1 / tr.rate_halflife)
+    d = det_pow(2.0, -1 / tr.rate_halflife)
     rate_sum, rate_norm = zeros(L), 0.0
     for st in 1:tr.steps
         c = st == 1 ? zeros(Int, L) : @view counts[st - 1, :]

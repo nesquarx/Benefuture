@@ -60,7 +60,7 @@ Run M3. Matrices are agents × domains: `h_pos`, `h_neg`, `relevance`, `balance`
 """
 function run_m3(p::M3Params; seed)
     w, t = p.world, p.world.toy
-    rng, mrng = Xoshiro(seed), Xoshiro(hash((seed, :measurement)))
+    rng, mrng = DetRNG(seed), det_rng(seed, :measurement)
     s = toy_state(t, rng)
     k, na, nd = length(w.models), length(p.agents), ndomains(p)
     history = [Float64[] for _ in 1:k]

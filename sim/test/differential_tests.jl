@@ -24,7 +24,7 @@ end
 
 # The guard accepts exactly the domain, and accepted outputs match the oracle.
 function differential(name, gen, domain, wrapper, oracle; trials = 400, seed = 1, atol = 1e-9, rtol = 1e-9)
-    r = Xoshiro(hash((seed, name)))
+    r = det_rng(seed, name)
     mismatched_guard, mismatched_value = 0, 0
     for _ in 1:trials
         x = gen(r)

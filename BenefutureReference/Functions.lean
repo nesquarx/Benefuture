@@ -5,6 +5,8 @@
   Only Lean 4 core language and standard library.
 -/
 
+import BenefutureReference.FloatDet
+
 namespace BenefutureReference
 
 /-- Sum of list of Floats. -/
@@ -22,11 +24,11 @@ def crossPairs {α : Type} : List α → List (α × α)
   items: list of (magnitude a_i, weight w_i).
 -/
 def phi_ref (items : List (Float × Float)) (q : Float) (kappa : Float) : Float :=
-  let linearTerms := items.map (fun (a, w) => w * (a.pow q))
+  let linearTerms := items.map (fun (a, w) => w * (det_pow a q))
   let linearSum := sumFloat linearTerms
   let pairs := crossPairs items
   let crossTerms := pairs.map (fun ((a1, w1), (a2, w2)) =>
-    w1 * w2 * ((a1 * a2).pow q))
+    w1 * w2 * (det_pow (a1 * a2) q))
   let crossSum := sumFloat crossTerms
   let synergyBoost := kappa * (crossSum.sqrt)
   linearSum + synergyBoost
@@ -55,8 +57,8 @@ def Sy_hat_ref (s : Float) (nu : Float) (h : Float) : Float :=
   else
     let sign := if s > 0.0 then 1.0 else -1.0
     let absS := if s < 0.0 then -s else s
-    let num := absS.pow nu
-    let den := num + (h.pow nu)
+    let num := det_pow absS nu
+    let den := num + (det_pow h nu)
     if den == 0.0 then
       0.0
     else
@@ -124,7 +126,7 @@ def Rep_decay_ref (cachedScore : Float) (dt : Float) (lambdaDecay : Float) : Flo
   if dt <= 0.0 then
     cachedScore
   else
-    cachedScore * (Float.exp (-lambdaDecay * dt))
+    cachedScore * (det_exp (-lambdaDecay * dt))
 
 /--
   Reference calculation of Parent Domain Aggregation.
@@ -194,7 +196,7 @@ def mean_ref (xs : List Float) : Float :=
 
 def central_moment_ref (xs : List Float) (k : Float) : Float :=
   let m := mean_ref xs
-  if xs.isEmpty then 0.0 else sumFloat (xs.map (fun x => (x - m).pow k)) / xs.length.toFloat
+  if xs.isEmpty then 0.0 else sumFloat (xs.map (fun x => det_pow (x - m) k)) / xs.length.toFloat
 
 /-- Third central moment with sign preserved (Float.pow is undefined for negative bases). -/
 def m3_ref (xs : List Float) : Float :=
@@ -359,6 +361,6 @@ def tiered_value_ref (u h n : List Float) (alpha beta gamma haWt lambda qPlus qM
   `peak` and `width` are governed, to be discovered. -/
 def meta_multiplier_ref (level amp peak width : Float) : Float :=
   if width <= 0.0 then 1.0
-  else 1.0 + amp * Float.exp (-((level - peak) * (level - peak)) / (2.0 * width * width))
+  else 1.0 + amp * det_exp (-((level - peak) * (level - peak)) / (2.0 * width * width))
 
 end BenefutureReference

@@ -600,4 +600,9 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
   let (idx, deg) := g_choose_lexical_fr_ref values.data dScope.data dMinU.data dMinH.data dMaxU.data (bools frOk)
   ⟨#[idx.toFloat, if deg then 1.0 else 0.0]⟩
 
+@[export bf_det_exp] def detExpExport (x : Float) : Float := det_exp x
+@[export bf_det_log] def detLogExport (x : Float) : Float := det_log x
+@[export bf_det_log1p] def detLog1pExport (x : Float) : Float := det_log1p x
+@[export bf_det_pow] def detPowExport (x y : Float) : Float := det_pow x y
+
 end BenefutureReference.Export

@@ -1,4 +1,5 @@
 import BenefutureReference.Domains
+import BenefutureReference.FloatDet
 
 /-
   BenefutureReference.Records
@@ -24,7 +25,7 @@ def audited_out_ref (rights records minRecords threshold : Float) : Bool :=
     net of rights and wrongs, smoothed (Nitzan and Paroush, 1982); no better than chance, no weight. -/
 def source_weight_ref (rights wrongs : Float) : Float :=
   let q := (rights + 1.0) / (rights + wrongs + 2.0)
-  max 0.0 (Float.log (q / (1.0 - q)))
+  max 0.0 (det_log (q / (1.0 - q)))
 
 /-- An event's probability from an as-of record of `k` occurrences in `n` trials, smoothed by
     Laplace's rule of succession ((k + 1) / (n + 2)): no record gives a coin toss, and no finite record
@@ -143,7 +144,7 @@ def chains_diverge_ref (values ses : Array Float) (z : Float) : Bool := Id.run d
   let mut d := false
   for i in [0:n] do
     for j in [i+1:n] do
-      let se := Float.sqrt (ses[i]! ^ 2 + ses[j]! ^ 2)
+      let se := Float.sqrt (sq ses[i]! + sq ses[j]!)
       if se > 0.0 && Float.abs (values[i]! - values[j]!) / se > z then d := true
   return d
 
@@ -157,7 +158,7 @@ def relative_accuracy_ref (credences outcomes : Array Float) : Float := Id.run d
   let mut b := 0.0
   let mut o := 0.0
   for i in [0:n] do
-    b := b + (credences[i]! - outcomes[i]!) ^ 2
+    b := b + sq (credences[i]! - outcomes[i]!)
     o := o + outcomes[i]!
   let nf := n.toFloat
   let ob := o / nf
@@ -197,7 +198,7 @@ def neg_share_ref (gains losses : Float) : Float :=
 /-- One record's credence score (8.36): 1 − (credence − outcome)² / 0.25, unclipped; its mean over a
     window, floored at zero, is `credence_accuracy_ref`. -/
 def credence_score_ref (credence outcome : Float) : Float :=
-  1.0 - (credence - outcome) ^ 2 / 0.25
+  1.0 - sq (credence - outcome) / 0.25
 
 /-- Full support where predictions are scored (Chen, Kash, Ruberry & Shnayder 2014; 8.58-a): when
     predictions select which plans are carried out and only what is carried out is scored, a model
@@ -241,7 +242,7 @@ def identity_confidence_ref (start : Float) (clusters weights : Array Float) (ra
     let mut k := 0
     for j in [0:i] do
       if clusters[j]! == clusters[i]! then k := k + 1
-    let w := max 0.0 (min 1.0 weights[i]!) * Float.pow disc k.toFloat
+    let w := max 0.0 (min 1.0 weights[i]!) * det_pow disc k.toFloat
     c := c + (1.0 - c) * rate * w
   let part := partCap * participation / (participation + half)
   return c + (1.0 - c) * part * c
@@ -286,9 +287,9 @@ def persistence_ref (significance : Array Float) (z : Float) : Nat := Id.run do
     `cap` (`log cap / log (1 + growth)` intervals). With persistence 0 it is `ratchet_credence_ref`.
     The credence only approaches 0.5, never crosses it, and it screens nobody out. -/
 def escalated_credence_ref (credence negShare : Float) (persistence : Nat) (growth cap : Float) : Float :=
-  let maxP := Float.log cap / Float.log (1.0 + growth)
+  let maxP := det_log cap / det_log (1.0 + growth)
   let p := min persistence.toFloat maxP
-  0.5 + (credence - 0.5) * (1.0 - negShare) * (1.0 + growth) ^ (-p)
+  0.5 + (credence - 0.5) * (1.0 - negShare) * det_pow (1.0 + growth) (-p)
 
 /-- Repeated discovered deception (author ruling on 8.91, 2026-11-06): each deception established by an
     audit adds to the actor's permanent deception record, and escrow rises exponentially with the count:
@@ -296,7 +297,7 @@ def escalated_credence_ref (credence negShare : Float) (persistence : Nat) (grow
     floored at `floorC` (never zero: the actor is not excluded, and settlement still pays what it delivers).
     Only established deception counts, so bad luck and honest mistakes never raise it. -/
 def repeat_escrow_credence_ref (credence negShare : Float) (repeats : Nat) (growth floorC : Float) : Float :=
-  max floorC ((0.5 + (credence - 0.5) * (1.0 - negShare)) * Float.pow (1.0 + growth) (-(repeats.toFloat)))
+  max floorC ((0.5 + (credence - 0.5) * (1.0 - negShare)) * det_pow (1.0 + growth) (-(repeats.toFloat)))
 
 /-- Undeclared copying (8.111; correlated ballots, 8.121): two independent sources' standardised differences have
   variance near the sum of their noise variances (about 1 or 2 by construction); a pair whose standardised
@@ -349,7 +350,7 @@ def effective_independent_judges_ref (both either priorSim : Array Float) (n : N
   and floors at `sharedFloor` (shared/reality error floor, `reqTt(ℝ)`), never below it. -/
 def trust_cascade_ref (sharedFloor unmitigated effClusters : Float) : Float :=
   let nEff := if effClusters > 0.0 then effClusters else 0.0
-  sharedFloor + unmitigated * Float.pow 2.0 (-nEff)
+  sharedFloor + unmitigated * det_pow 2.0 (-nEff)
 
 /-- A test re-run at every new record (repeated looks) must not fire by chance as the record grows: a signed error's
   mean is significant only beyond `z * sqrt(1 + ln(n / n0))` standard errors, a bar that equals `z` at the minimum
@@ -359,7 +360,7 @@ def sequential_significant_ref (mean sd : Float) (n n0 : Nat) (z : Float) : Bool
   if n < n0 || n < 2 || sd <= 0.0 then false
   else
     let se := sd / Float.sqrt n.toFloat
-    let bar := z * Float.sqrt (1.0 + Float.log (n.toFloat / n0.toFloat))
+    let bar := z * Float.sqrt (1.0 + det_log (n.toFloat / n0.toFloat))
     Float.abs mean > bar * se
 
 /-- A fork divides an identity's standing (L123, 8.34): each new identity takes `shares[k]` (non-negative, summing to

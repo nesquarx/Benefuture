@@ -2,7 +2,7 @@
 # the Lean reference (`Escrow_split_ref`, `Rep_decay_ref`, `resource_cost_ref`,
 # `transaction_price_ref`, `supply_delta_ref`, `competition_efficiency_ref`).
 
-using Random
+# using Random provided selectively by BenefutureSim
 
 probability(p) = check(isfinite(p) && 0 <= p <= 1, "probability must lie in [0, 1]")
 
@@ -491,7 +491,7 @@ cluster's say is its attestation skill clipped to [0, 1]; admitted when the clus
 """
 function binding_admits_weighted(confidences, weights, threshold::Real, quorum_weight::Real)
     check(length(confidences) == length(weights), "one weight per cluster")
-    check(all(c -> isfinite(c) && 0 <= c <= 1, confidences) && all(isfinite, weights) && 0 <= threshold <= 1 && quorum_weight >= 0,
+    check(all(c -> isfinite(c) && 0 <= c <= 1, confidences) && all(isfinite, weights) && 0 <= threshold <= 1 && isfinite(quorum_weight) && quorum_weight >= 0,
           "confidences and threshold in [0, 1], finite weights, quorum weight non-negative")
     @lccall(sym(:bf_binding_admits_weighted), UInt8, (Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64),
           floatarray(collect(Float64, confidences)), floatarray(collect(Float64, weights)), threshold, quorum_weight) == 1

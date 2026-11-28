@@ -8,7 +8,7 @@
 # Glue and measurement, no rule: the clustering is an instrument (a candidate for a Lean export when phase B lets clusters
 # govern), the network is a world property.
 
-using Random, Statistics
+# using Random, Statistics provided selectively by BenefutureSim
 
 "A persistent trust network: `contacts[i]` are the persons voter `i` hears. `planted` is the world's own community labels, kept only to judge recovery (never read by a rule)."
 struct TrustNetwork
@@ -25,7 +25,7 @@ share `homophily` of them from its own community (people mostly talk to their ow
 """
 function build_trust_network(n::Integer; communities::Integer = 4, n_contacts::Integer = 5, homophily::Real = 0.85, seed::Integer = 1)
     check(n >= 2 && communities >= 1 && n_contacts >= 1 && 0 <= homophily <= 1, "network: n at least 2, communities and contacts positive, homophily in [0, 1]")
-    rng = Xoshiro(hash((seed, :trust_network)))
+    rng = det_rng(seed, :trust_network)
     planted = [1 + (i - 1) % communities for i in 1:n]
     contacts = map(1:n) do i
         own = [j for j in 1:n if j != i && planted[j] == planted[i]]
@@ -274,9 +274,11 @@ function unified_fractal_epoch!(U, ep::Integer, tr)
     up.fractal_truth === nothing || (W = merge(W, (τ = copy(up.fractal_truth),)))
     r = run_fractal(labs, p; seed = ep, world = W)
     up.settle || (U.drawn[] += root)
-    gap = sum(values(r.balances)) - (root + r.minted - r.burnt)
+    bkeys = sort!(collect(keys(r.balances)))
+    skeys = sort!(collect(keys(r.spent)))
+    gap = sum(r.balances[k] for k in bkeys; init = 0.0) - (root + r.minted - r.burnt)
     rec = (epoch = ep, reserve = root, ledger_gap = gap, minted = r.minted, burnt = r.burnt, decisions = length(r.decisions), right_share = r.right_share,
-           harm_peak = r.harm_peak, drawn = up.settle ? root : U.drawn[], commons = U.commons[], spent = sum(values(r.spent)), degraded = length(r.degraded))
+           harm_peak = r.harm_peak, drawn = up.settle ? root : U.drawn[], commons = U.commons[], spent = sum(r.spent[k] for k in skeys; init = 0.0), degraded = length(r.degraded))
     if up.scoped   # phase D (a): the decisions set the economy's scoped parameters; a finer scope wins, a coarser later decision sets only what is undecided
         U.scope[] = unified_scope(r.decisions, length(U.bars[]))
         U.bars[] = [haskey(U.scope[], d) && U.scope[][d].option == 1 ? up.bar_step : 0.0 for d in 1:length(U.bars[])]
@@ -284,7 +286,8 @@ function unified_fractal_epoch!(U, ep::Integer, tr)
     end
     if up.settle   # phase D (b): the clusters' reserves settle into the economy (the finest clusters' balances to their members' purses, every coarser reserve back to the commons)
         purses = zeros(na); back = 0.0
-        for ((l, c), b) in r.balances
+        for (l, c) in bkeys
+            b = r.balances[(l, c)]
             if l == 1
                 m = findall(==(c), r.levels[1]); purses[m] .+= b / length(m)
             else

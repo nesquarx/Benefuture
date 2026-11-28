@@ -15,7 +15,7 @@
 # economy agents); each attester vouches for a subject at most once, at a random step; the audit is an independent per-identity chance;
 # records do not decay and are never repaired.
 
-using Random, Statistics
+# using Random, Statistics provided selectively by BenefutureSim
 
 """
     IdentityParams
@@ -88,7 +88,7 @@ function identity_setup(p::IdentityParams, net, communities::Integer; seed::Inte
           p.part_half > 0 && 0 < p.stated < 1 && 0 <= p.p_audit <= 1 && 0.5 <= p.audit_acc <= 1 && 0 <= p.record_floor <= 1 && p.farm_clusters >= 0 && 0 <= p.work_conf <= 1 && 0 <= p.sustenance <= 1 && 0 <= p.sybil_reach <= 1 && p.steps_per_epoch >= 1,
           "identity: counts non-negative, rate and part_cap in [0, 1), disc, shares and thresholds in [0, 1], part_half positive")
     na = net.n; N = na + p.newcomers + p.sybils
-    rng = Xoshiro(hash((seed, :identity)))
+    rng = det_rng(seed, :identity)
     planted = vcat(net.planted, [1 + (i - 1) % communities for i in (na + 1):N])
     kind = vcat(fill(:member, na), fill(:newcomer, p.newcomers), fill(:sybil, p.sybils))
     contacts = map(1:p.newcomers) do k
@@ -107,7 +107,7 @@ function identity_setup(p::IdentityParams, net, communities::Integer; seed::Inte
     conf = p.binding ? vcat(fill(p.member, na), fill(p.prelim, p.newcomers), zeros(p.sybils)) : ones(N)
     flagged = [k == :sybil for k in kind]
     IdentityLayer(p, na, N, planted, kind, contacts, hears, targets, conf, flagged, [Float64[] for _ in 1:N], [Int[] for _ in 1:N],
-                  [Float64[] for _ in 1:N], [Float64[] for _ in 1:N], ones(N), Dict{Int,Float64}(), falses(N), Xoshiro(hash((seed, :identity_audit))),
+                  [Float64[] for _ in 1:N], [Float64[] for _ in 1:N], ones(N), Dict{Int,Float64}(), falses(N), det_rng(seed, :identity_audit),
                   Set{Tuple{Int,Int}}(), 0, rng, NamedTuple[])
 end
 

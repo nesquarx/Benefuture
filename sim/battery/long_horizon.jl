@@ -10,7 +10,7 @@
 #   4. High-Seed Open-Question Sweeps (64 paired seeds on 8.85 800-step model takeover, 64 paired seeds
 #      on 8.81 marginal-domain overpromising, and 32 paired seeds on 8.86 accession size scaling).
 
-using BenefutureSim, Statistics, Random, Printf, Dates
+using BenefutureSim, Statistics, Random, Printf, Dates, Serialization
 
 # ---- L3.1: one world, many arms ------------------------------------------------------------------
 # `world(seed; arm, stress)` returns the economy (`econ`) and a governance builder (`gov(trace)`) for
@@ -73,7 +73,7 @@ function world(seed::Integer; arm::Symbol = :bf, stress::Symbol = :stressed, ste
                n_agents::Integer = 12, decisions::Integer = 1200, ih::Bool = arm == :bf, dormant::Bool = arm == :bf)
     arm in WORLD_ARMS || error("arm must be one of $WORLD_ARMS")
     bf = arm == :bf
-    skills = draw_skills(Xoshiro(20261102 + seed), n_agents, 4, [1, 3]; median = 0.6)
+    skills = draw_skills(DetRNG(20261102 + seed), n_agents, 4, [1, 3]; median = 0.6)
     agents = [DomainAgent(skills[a, :], [0.5, 0.0, 0.5, 0.0], CALIBRATED.sloppiness) for a in 1:n_agents]
     deceit = zeros(n_agents); deceit[n_agents - 1] = 1.0; deceit[n_agents] = 1.0   # steady, and the on-off one
     frivolous = zeros(n_agents); frivolous[n_agents - 2] = 0.5                      # the slanderer
@@ -124,6 +124,36 @@ function parse_cli_args(args = ARGS)
             i += 2
         elseif startswith(arg, "--out=")
             parsed["out"] = split(arg, "=", limit = 2)[2]
+            i += 1
+        elseif arg == "--workers" && i < length(args)
+            parsed["workers"] = parse(Int, args[i+1])
+            i += 2
+        elseif startswith(arg, "--workers=")
+            parsed["workers"] = parse(Int, split(arg, "=", limit = 2)[2])
+            i += 1
+        elseif arg == "--cache-dir" && i < length(args)
+            parsed["cache_dir"] = args[i+1]
+            i += 2
+        elseif startswith(arg, "--cache-dir=")
+            parsed["cache_dir"] = split(arg, "=", limit = 2)[2]
+            i += 1
+        elseif arg == "--lh-task" && i < length(args)
+            parsed["lh_task"] = args[i+1]
+            i += 2
+        elseif startswith(arg, "--lh-task=")
+            parsed["lh_task"] = split(arg, "=", limit = 2)[2]
+            i += 1
+        elseif arg == "--seed" && i < length(args)
+            parsed["seed"] = parse(Int, args[i+1])
+            i += 2
+        elseif startswith(arg, "--seed=")
+            parsed["seed"] = parse(Int, split(arg, "=", limit = 2)[2])
+            i += 1
+        elseif arg == "--jls" && i < length(args)
+            parsed["jls"] = args[i+1]
+            i += 2
+        elseif startswith(arg, "--jls=")
+            parsed["jls"] = split(arg, "=", limit = 2)[2]
             i += 1
         else
             i += 1
@@ -185,6 +215,74 @@ function parallel_map(f, xs)
 end
 
 if !WORLD_ONLY
+const LH_WORKERS = get(CLI_ARGS, "workers", 1)
+const LH_CACHE_DIR = get(CLI_ARGS, "cache_dir", "")
+const LH_TASK = get(CLI_ARGS, "lh_task", "")
+const LH_SEED = get(CLI_ARGS, "seed", 0)
+const LH_JLS = get(CLI_ARGS, "jls", "")
+
+function write_jls_atomic(path::AbstractString, val)
+    mkpath(dirname(path))
+    tmp = path * ".tmp.$(getpid())"
+    serialize(tmp, val)
+    mv(tmp, path; force = true)
+end
+
+function run_l33_arm(seed::Integer; arm::Symbol, stress::Symbol, steps::Integer, epoch::Integer, m5_decisions::Integer)
+    w = world(seed; arm = arm, stress = stress, steps = steps, decisions = m5_decisions)
+    tr = run_coupled(w.econ, w.gov; seed = seed, epoch = epoch, coupled = true, m5_decisions = m5_decisions, continuous = true, unified = w.unified)
+    sp = tr.success
+    (floor_u = sp.floor_u, floor_h = sp.floor_h, median_u = sp.median_u,
+     median_h = sp.median_h, worst_drop = sp.worst_drop, gov_acc = tr.gov_acc)
+end
+
+function better_models_world(; steps = 800, p_new_model = 0.03, accuracy_rule = :decay)
+    M3cParams(
+        ToyParams(n = 80, steps = steps, plans = 10),
+        [DomainAgent([l in (1, 3) ? 0.6 : 0.0 for l in 1:4], [0.5, 0, 0.5, 0], 0.0) for _ in 1:6],
+        [1, 1, 2, 2], trues(4);
+        λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+        σ_leaf = 0.65, σ_branch = 0.75, σ_coarse = 0.85,
+        p_new_model = p_new_model, improve_drift = -0.15,
+        accuracy_rule = accuracy_rule
+    )
+end
+own_share(tr) = (k = [i for i in eachindex(tr.chosen_step) if tr.chosen_step[i] > 50];
+                 isempty(k) ? 0.0 : mean(tr.priced_leaf[k] .== tr.true_leaf[k]))
+function run_open885_seed(seed::Integer)
+    tr_dec = run_m3c(better_models_world(accuracy_rule = :decay); seed)
+    tr_win = run_m3c(better_models_world(accuracy_rule = :window); seed)
+    (
+        takeover_dec = tr_dec.takeovers > 0,
+        takeover_win = tr_win.takeovers > 0,
+        ntake_dec = tr_dec.takeovers,
+        ntake_win = tr_win.takeovers,
+        own_dec = own_share(tr_dec),
+        own_win = own_share(tr_win),
+        fu_dec = tr_dec.floor_u[end] - tr_dec.floor_u[50],
+        fu_win = tr_win.floor_u[end] - tr_win.floor_u[50]
+    )
+end
+
+if !isempty(LH_TASK)
+    val = if LH_TASK == "open_885_better_models"
+        run_open885_seed(LH_SEED)
+    elseif LH_TASK in ("10yr_coupled", "20yr_coupled_gov", "100yr_century")
+        spec = LH_TASK == "10yr_coupled" ? (steps = 120, epoch = 24, m5_decisions = 120) :
+               LH_TASK == "20yr_coupled_gov" ? (steps = 240, epoch = 20, m5_decisions = 1200) :
+               (steps = 1200, epoch = 25, m5_decisions = 1200)
+        (
+            bf_s  = run_l33_arm(LH_SEED; arm = :bf,         stress = :stressed,   steps = spec.steps, epoch = spec.epoch, m5_decisions = spec.m5_decisions),
+            bf_u  = run_l33_arm(LH_SEED; arm = :bf,         stress = :unstressed, steps = spec.steps, epoch = spec.epoch, m5_decisions = spec.m5_decisions),
+            sq_s  = run_l33_arm(LH_SEED; arm = :status_quo, stress = :stressed,   steps = spec.steps, epoch = spec.epoch, m5_decisions = spec.m5_decisions),
+            sq_u  = run_l33_arm(LH_SEED; arm = :status_quo, stress = :unstressed, steps = spec.steps, epoch = spec.epoch, m5_decisions = spec.m5_decisions),
+        )
+    else
+        error("Unknown --lh-task: $LH_TASK")
+    end
+    isempty(LH_JLS) && error("--jls must be set when using --lh-task")
+    write_jls_atomic(LH_JLS, val)
+else
 commit = current_commit()
 t_start = time()
 rows = NamedTuple[]
@@ -197,11 +295,12 @@ function flush_report!(sections, rows, commit, t_start; status = "IN PROGRESS")
         println(io)
         @printf(io, "- **Commit**: `%s`\n", commit)
         @printf(io, "- **Threads**: `%d`\n", Threads.nthreads())
+        LH_WORKERS > 1 && @printf(io, "- **Workers**: `%d`\n", LH_WORKERS)
         @printf(io, "- **Status**: `%s` (%.1f minutes elapsed)\n", status, elapsed)
         println(io, "- **Coupling Mode**: `continuous = true` (persistent M3c state across epochs, L3.4 / `run_coupled`)")
         println(io, "- **Significance Standard**: Exploratory `z = 2.0`; **README / formal claim bar `z = 3.0`**, contiguous paired seeds `1:N`.")
         println(io, "- **Pre-stated Hypotheses & Smallest Effects That Matter (`L3.3`)**:")
-        println(io, "  - *Mechanisms (`:bf` vs `:status_quo`)*: Under identical world, adversaries, noise, and shocks (`L3.1`), Benefuture (`:decay`, `advap = true`, `ratchet_k = 3`, `:record`) yields higher `floor_u`, `floor_h`, `median_u`, `median_h`, smaller `worst_drop`, and higher `gov_acc` than `:status_quo` (`:window`, `advap = false`, `ratchet_k = 0`, `:normal`), with strongest advantage under `:stressed`.")
+        println(io, "  - *Mechanisms (`:bf` vs `:status_quo`)*: Under identical world, adversaries, noise, and shocks (`L3.1`), Benefuture (`:decay`, `advap = true`, `ratchet_k = 3`, `:eb`, `dormant_flags`, `bf_unified()`) yields higher `floor_u`, `floor_h`, `median_u`, `median_h`, smaller `worst_drop`, and higher `gov_acc` than `:status_quo` (`:window`, `advap = false`, `ratchet_k = 0`, `:normal`), with strongest advantage under `:stressed`.")
         println(io, "  - *Stress (`:stressed` vs `:unstressed`)*: Catastrophes, outages, and metric capture degrade `floor_u`, `floor_h`, and `worst_drop` relative to `:unstressed` (which keeps breakthroughs and baseline hazards/deceivers equal).")
         println(io, "  - *Smallest Effects That Matter*: `|Δ floor| >= 2.0`, `|Δ median| >= 2.0`, `|Δ worst_drop| >= 1.0`, `|Δ gov_acc| >= 0.01` (`1.0 pp`), at `z >= 3.0`.")
         println(io)
@@ -218,6 +317,40 @@ function flush_report!(sections, rows, commit, t_start; status = "IN PROGRESS")
                     r.ci_lo, r.ci_hi, r.sig2, r.sig3)
         end
     end
+end
+
+function run_seeds(suite::String, seeds, fallback_fn)
+    LH_WORKERS <= 1 && return parallel_map(fallback_fn, seeds)
+    cache_dir = isempty(LH_CACHE_DIR) ? joinpath(@__DIR__, "cache", "long_horizon_$(commit)") : LH_CACHE_DIR
+    mkpath(cache_dir)
+    seed_vec = collect(seeds)
+    out = Vector{Any}(undef, length(seed_vec))
+    next_i = Threads.Atomic{Int}(1)
+    done_i = Threads.Atomic{Int}(0)
+    script = @__FILE__
+    proj = joinpath(@__DIR__, "..")
+    t_s = time()
+    @sync for _ in 1:min(LH_WORKERS, length(seed_vec))
+        Threads.@spawn while true
+            i = Threads.atomic_add!(next_i, 1)
+            i > length(seed_vec) && break
+            wait_for_allowed_window!()
+            s = seed_vec[i]
+            outpath = joinpath(cache_dir, "$(suite)_seed_$(s).jls")
+            if !isfile(outpath)
+                cmd = Cmd([Base.julia_cmd().exec[1], "-t", "1", "--project=$proj", script,
+                           "--lh-task=$suite", "--seed=$s", "--jls=$outpath"])
+                Base.run(cmd)
+            end
+            out[i] = deserialize(outpath)
+            n = Threads.atomic_add!(done_i, 1) + 1
+            if n % 4 == 0 || n == length(seed_vec)
+                println(@sprintf("[long_horizon/%s] %d / %d seeds complete (%.1f min)", suite, n, length(seed_vec), (time() - t_s) / 60))
+                flush(stdout)
+            end
+        end
+    end
+    return out
 end
 
 function record_comparison!(rows, suite, metric, a::AbstractVector{<:Real}, b::AbstractVector{<:Real})
@@ -253,25 +386,15 @@ const COUPLED_METRICS = [
     (:gov_acc,    "Governance accuracy (`gov_acc`)", "%.4f"),
 ]
 
-function run_l33_arm(seed::Integer; arm::Symbol, stress::Symbol, steps::Integer, epoch::Integer, m5_decisions::Integer)
-    w = world(seed; arm = arm, stress = stress, steps = steps, decisions = m5_decisions)
-    tr = run_coupled(w.econ, w.gov; seed = seed, epoch = epoch, coupled = true, m5_decisions = m5_decisions, continuous = true, unified = w.unified)
-    sp = tr.success
-    (floor_u = sp.floor_u, floor_h = sp.floor_h, median_u = sp.median_u,
-     median_h = sp.median_h, worst_drop = sp.worst_drop, gov_acc = tr.gov_acc)
-end
-
 function run_l33_suite!(sections, rows, commit, t_start; idx::Int, suite::String, title::String,
                         seeds, steps::Integer, epoch::Integer, m5_decisions::Integer)
     t0 = time()
-    res = parallel_map(seeds) do seed
-        (
-            bf_s  = run_l33_arm(seed; arm = :bf,         stress = :stressed,   steps, epoch, m5_decisions),
-            bf_u  = run_l33_arm(seed; arm = :bf,         stress = :unstressed, steps, epoch, m5_decisions),
-            sq_s  = run_l33_arm(seed; arm = :status_quo, stress = :stressed,   steps, epoch, m5_decisions),
-            sq_u  = run_l33_arm(seed; arm = :status_quo, stress = :unstressed, steps, epoch, m5_decisions),
-        )
-    end
+    res = run_seeds(suite, seeds, seed -> (
+        bf_s  = run_l33_arm(seed; arm = :bf,         stress = :stressed,   steps, epoch, m5_decisions),
+        bf_u  = run_l33_arm(seed; arm = :bf,         stress = :unstressed, steps, epoch, m5_decisions),
+        sq_s  = run_l33_arm(seed; arm = :status_quo, stress = :stressed,   steps, epoch, m5_decisions),
+        sq_u  = run_l33_arm(seed; arm = :status_quo, stress = :unstressed, steps, epoch, m5_decisions),
+    ))
     contrasts = [
         ("bf_vs_sq_stressed",          "Benefuture vs Status-Quo (Stressed)",     r -> r.bf_s, r -> r.sq_s),
         ("bf_vs_sq_unstressed",        "Benefuture vs Status-Quo (Unstressed)",   r -> r.bf_u, r -> r.sq_u),
@@ -320,36 +443,7 @@ run_l33_suite!(sections, rows, commit, t_start;
 println("[4/4] Running High-Seed Sweeps for Open Questions 8.85 and 8.81 (seeds $(first(SWEEP_SEEDS)):$(last(SWEEP_SEEDS)))...")
 begin
     t0 = time()
-    # 8.85 open question: Does time-weighted comparison (:decay) vs fixed window (:window) change
-    # takeover rates or own-currency share in the 800-step better-models world over 1:N_SWEEP_SEEDS?
-    function better_models_world(; steps = 800, p_new_model = 0.03, accuracy_rule = :decay)
-        M3cParams(
-            ToyParams(n = 80, steps = steps, plans = 10),
-            [DomainAgent([l in (1, 3) ? 0.6 : 0.0 for l in 1:4], [0.5, 0, 0.5, 0], 0.0) for _ in 1:6],
-            [1, 1, 2, 2], trues(4);
-            λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
-            σ_leaf = 0.65, σ_branch = 0.75, σ_coarse = 0.85,
-            p_new_model = p_new_model, improve_drift = -0.15,
-            accuracy_rule = accuracy_rule
-        )
-    end
-    own_share(tr) = (k = [i for i in eachindex(tr.chosen_step) if tr.chosen_step[i] > 50];
-                     isempty(k) ? 0.0 : mean(tr.priced_leaf[k] .== tr.true_leaf[k]))
-
-    res_885 = parallel_map(SWEEP_SEEDS) do seed
-        tr_dec = run_m3c(better_models_world(accuracy_rule = :decay); seed)
-        tr_win = run_m3c(better_models_world(accuracy_rule = :window); seed)
-        (
-            takeover_dec = tr_dec.takeovers > 0,
-            takeover_win = tr_win.takeovers > 0,
-            ntake_dec = tr_dec.takeovers,
-            ntake_win = tr_win.takeovers,
-            own_dec = own_share(tr_dec),
-            own_win = own_share(tr_win),
-            fu_dec = tr_dec.floor_u[end] - tr_dec.floor_u[50],
-            fu_win = tr_win.floor_u[end] - tr_win.floor_u[50]
-        )
-    end
+    res_885 = run_seeds("open_885_better_models", SWEEP_SEEDS, run_open885_seed)
 
     c_885_take = record_comparison!(rows, "open_885_better_models", "takeover_count_decay_vs_window",
                                     Float64[r.ntake_dec for r in res_885], Float64[r.ntake_win for r in res_885])
@@ -383,4 +477,5 @@ begin
 end
 
 println("Long-horizon simulation suite completed cleanly in $(round((time() - t_start)/60, digits=1)) minutes.")
+end  # isempty(LH_TASK)
 end  # !WORLD_ONLY

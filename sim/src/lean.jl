@@ -3,7 +3,7 @@
 # when the hash of the Lean sources differs from the hash stamped beside it, so loading the
 # package never re-runs Lake when the rules are unchanged.
 
-using Libdl, SHA, Random
+using Libdl, SHA
 
 const REPO = normpath(joinpath(@__DIR__, "..", ".."))
 const SO_EXT = Sys.isapple() ? ".dylib" : ".so"
@@ -51,6 +51,7 @@ function trace_call(name, ins, out)
 end
 
 "Generator state, for trace marks."
+rngsig(r::DetRNG) = UInt64[r.s0, r.s1, r.s2, r.s3, UInt64(r.has_spare), reinterpret(UInt64, r.spare)]
 rngsig(r::Random.AbstractRNG) = UInt64[getfield(r, i) for i in 1:fieldcount(typeof(r))]
 
 "Step marker with a state hash: `tag`, then the values hashed (Float64 arrays by bit pattern)."
@@ -161,3 +162,8 @@ function floatarray(xs)
     end
     a
 end
+
+lean_det_exp(x::Real) = @lccall(sym(:bf_det_exp), Float64, (Float64,), Float64(x))
+lean_det_log(x::Real) = @lccall(sym(:bf_det_log), Float64, (Float64,), Float64(x))
+lean_det_log1p(x::Real) = @lccall(sym(:bf_det_log1p), Float64, (Float64,), Float64(x))
+lean_det_pow(x::Real, y::Real) = @lccall(sym(:bf_det_pow), Float64, (Float64, Float64), Float64(x), Float64(y))

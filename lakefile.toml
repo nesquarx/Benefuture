@@ -8,6 +8,7 @@ globs = ["Benefuture", "Benefuture.+"]
 
 [[lean_lib]]
 name = "BenefutureReference"
+moreLeancArgs = ["-ffp-contract=off"]
 
 # Build-time differential tests of the Float reference against the Mathlib specification
 # (Mathlib allowed here; never imported by BenefutureReference or Main).
@@ -17,6 +18,7 @@ name = "BenefutureTest"
 [[lean_exe]]
 name = "benefuture"
 root = "Main"
+moreLeancArgs = ["-ffp-contract=off"]
 
 [[require]]
 name = "mathlib"

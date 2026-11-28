@@ -56,9 +56,9 @@ function run_m1(p::M1Params; seed, central::Bool = true, p_act::Real = 0.25, act
     check(0 <= p_act <= 1 && all(x -> isfinite(x) && x >= 0, (action_scale, view_σ)),
           "p_act in [0, 1] and scales non-negative")
     t = p.toy
-    rng = Xoshiro(seed)                      # world: the same stream as M0
-    mrng = Xoshiro(hash((seed, :measurement)))
-    vrng = central ? nothing : Xoshiro(hash((seed, :views)))
+    rng = DetRNG(seed)                      # world: the same stream as M0
+    mrng = det_rng(seed, :measurement)
+    vrng = central ? nothing : det_rng(seed, :views)
     s = toy_state(t, rng)
     k = length(p.models)
     history = [Float64[] for _ in 1:k]

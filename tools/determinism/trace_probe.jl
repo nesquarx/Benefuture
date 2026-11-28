@@ -62,9 +62,9 @@ end
 function lean_sweep()
     calls = Vector{Any}()
     rec(name, ins, outs) = push!(calls, Dict("call" => name, "in" => hexf.(Float64.(ins)), "out" => hexf.(Float64.(outs))))
-    rng = Xoshiro(7)
+    rng = BS.DetRNG(7)
     for i in 1:40
-        s = rand(rng, 4); s ./= sum(s)
+        s = rand(rng, 4); s ./= BS.det_sum(s)
         for (pos, neg) in ((1.1, 1.5), (0.7, 2.3))
             a = BS.attribute(s, 1.0, pos, neg); rec("attribute", [s; 1.0; pos; neg], [a[1]; a[2]])
         end
@@ -73,14 +73,15 @@ function lean_sweep()
             rec("classify", [d; thr; T], BS.classify(d, threshold = thr, temperature = T))
         end
         sg = 4 * randn(rng); rec("decay_rate_for", [sg, 0.05, 0.02], [BS.decay_rate_for(sg; λpos = 0.05, λneg = 0.02)])
-        rec("accumulation_threshold", [1.0, 0.5, 20 * rand(rng)], [BS.accumulation_threshold(1.0, 0.5, 20 * rand(Xoshiro(i)))])
+        rec("accumulation_threshold", [1.0, 0.5, 20 * rand(rng)], [BS.accumulation_threshold(1.0, 0.5, 20 * rand(BS.DetRNG(i)))])
     end
-    # Julia-side numerics that depend on the host: libm-backed pow, SIMD sums, exp/log
+    # Julia-side numerics & Lean software transcendentals: fixed bit patterns across hosts/CPU widths/threads
     for n in (4, 8, 16, 31, 32, 64, 200)
-        y = randn(Xoshiro(n), n); rec("jl_sum", [n], [sum(y), sum(abs2, y), sum(y .* y)])
+        y = randn(BS.DetRNG(n), n); rec("jl_sum", [n], [BS.det_sum(y), BS.det_sum(abs2, y), BS.det_sum(y .* y)])
     end
     xs = [0.001, 0.37, 1.7, 12.5, 55.5]
-    rec("jl_exp_log_pow", xs, vcat(exp.(xs), log.(xs), xs .^ 0.37, xs .^ 2.5, log1p.(xs)))
+    rec("jl_exp_log_pow", xs, vcat(BS.det_exp.(xs), BS.det_log.(xs), BS.det_pow.(xs, 0.37), BS.det_pow.(xs, 2.5), BS.det_log1p.(xs)))
+    rec("lean_exp_log_pow", xs, vcat(BS.lean_det_exp.(xs), BS.lean_det_log.(xs), BS.lean_det_pow.(xs, 0.37), BS.lean_det_pow.(xs, 2.5), BS.lean_det_log1p.(xs)))
     calls
 end
 

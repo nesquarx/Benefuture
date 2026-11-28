@@ -58,8 +58,8 @@ Run M3b. Matrices are agents × currencies (D domains, then StandCoin). Per chos
 """
 function run_m3b(p::M3bParams; seed)
     w, t = p.world, p.world.toy
-    rng, mrng = Xoshiro(seed), Xoshiro(hash((seed, :measurement)))
-    drng, crng = Xoshiro(hash((seed, :domain))), Xoshiro(hash((seed, :classification)))
+    rng, mrng = DetRNG(seed), det_rng(seed, :measurement)
+    drng, crng = det_rng(seed, :domain), det_rng(seed, :classification)
     s = toy_state(t, rng)
     k, na, nd = length(w.models), length(p.agents), ndomains(p)
     nc = nd + 1

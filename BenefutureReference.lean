@@ -4,6 +4,7 @@
   MANDATORY REQUIREMENT: ZERO imports from Mathlib, ZERO imports from Benefuture.
 -/
 
+import BenefutureReference.FloatDet
 import BenefutureReference.Functions
 import BenefutureReference.Goal
 import BenefutureReference.Measurement
