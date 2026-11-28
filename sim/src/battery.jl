@@ -215,8 +215,8 @@ function write_results(label, bt, names; clean, minutes, commit = current_commit
     end
     sc = bt.screening
     order = sortperm(sc.importance; rev = true)
-    pairs = sort(collect(sc.pairs); by = x -> -abs(x[2]))
-    near = sort(filter(b -> isfinite(b.t), bt.boundary); by = b -> b.t)
+    pairs = sort(collect(sc.pairs); by = x -> -abs(x[2]), alg = MergeSort)
+    near = sort(filter(b -> isfinite(b.t), bt.boundary); by = b -> b.t, alg = MergeSort)
     open(joinpath(dir, label * ".md"), "w") do io
         println(io, "# Failure-boundary battery: ", label, "\n")
         println(io, "Build: commit ", commit, " (with any uncommitted changes at the time).\n")

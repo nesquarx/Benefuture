@@ -83,3 +83,49 @@ _det_digest(xs) = bytes2hex(sha256(join((_det_hexf(x) for x in xs), ",")))
                     m7_tr.floor_u, m7_tr.median_u, c_tr.floor_u, c_tr.floor_h, [f.ledger_gap for f in c_tr.unified.fractal])
     @test _det_digest(mod_vals) == "e049651202b674f30c3fb0e0fe2ec928fb1475fbfa4e6f2059c683dd15d01c3f"
 end
+
+@testset "GP surrogate (methods.jl) is invariant to BLAS thread count" begin
+    # Red baseline: with LAPACK cholesky and BLAS triangular solves the predictions moved with the thread count.
+    function gp_bits(nthreads)
+        old = BenefutureSim.LinearAlgebra.BLAS.get_num_threads()
+        BenefutureSim.LinearAlgebra.BLAS.set_num_threads(nthreads)
+        try
+            out = UInt64[]
+            for (n, d) in ((40, 4), (90, 6), (160, 5))
+                rng = DetRNG(100 + n)
+                Z = [rand(rng) for _ in 1:n, _ in 1:d]
+                y = [Z[i, 1] * Z[i, 2] + 0.1 * randn(rng) for i in 1:n]
+                P = [rand(rng) for _ in 1:(2n), _ in 1:d]
+                pr = BenefutureSim.gp_predict(BenefutureSim.gp_fit(Z, y), P)
+                append!(out, reinterpret.(UInt64, pr.μ), reinterpret.(UInt64, pr.σ))
+            end
+            out
+        finally
+            BenefutureSim.LinearAlgebra.BLAS.set_num_threads(old)
+        end
+    end
+    @test gp_bits(1) == gp_bits(4)
+    @test gp_bits(1) == gp_bits(2)
+end
+
+@testset "Seed encoding fails loudly on exotic types; cumsum and sorts are order-pinned" begin
+    @test_throws ErrorException stream_seed(4, 'x')      # red baseline: fell back to Base.hash silently
+    @test_throws ErrorException stream_seed(4, missing)
+    @test stream_seed(4, :a, "b", 3, 0.5, (1, :c), [1, 2], true, nothing) isa UInt64
+
+    # det_cumsum is the sequential loop, bitwise (also equals Base.cumsum here; the contract is the loop)
+    xs = randn(DetRNG(5), 1000) .* 10.0 .^ randn(DetRNG(6), 1000)
+    seq = let acc = 0.0, out = Float64[]
+        for x in xs; acc += x; push!(out, acc); end
+        out
+    end
+    @test reinterpret(UInt64, BenefutureSim.det_cumsum(xs)) == reinterpret(UInt64, seq)
+    @test reinterpret(UInt64, running_mean(xs)) == reinterpret(UInt64, seq ./ (1:length(xs)))
+    @test BenefutureSim.det_cumsum(Float64[]) == Float64[]
+
+    # Ties among equal keys with distinct payloads keep input order (stable), with an explicit tiebreak where a Dict is sorted
+    ev = [(3, :a), (1, :b), (3, :c), (1, :d), (2, :e), (3, :f), (1, :g)]
+    @test [p for (_, p) in sort(ev; by = first, alg = MergeSort)] == [:b, :d, :g, :e, :a, :c, :f]
+    big = [(i % 3, i) for i in 1:200]
+    @test sort(big; by = first, alg = MergeSort) == sort(big; by = x -> (x[1], x[2]))
+end

@@ -362,7 +362,7 @@ function _feed_seed(h::UInt64, x)
         end
         return h
     end
-    return _fnv_u64(_fnv_byte(h, 0x58), UInt64(hash(x)))
+    error("stream_seed: no deterministic encoding for $(T); add a `_feed_seed` method (Base.hash is not stable across Julia versions)")
 end
 
 "Deterministic 64-bit stream seed over integers, symbols, strings, tuples, bools, and floats (invariant across Julia versions)."
@@ -730,6 +730,67 @@ function det_matvec_t(A::AbstractMatrix, y::AbstractVector)
             s += Float64(A[i, j]) * Float64(y[i])
         end
         out[j] = s
+    end
+    return out
+end
+
+"Lower Cholesky factor of a symmetric matrix (reads the lower triangle), fixed row-major order, left-to-right sums; `nothing` if not positive definite."
+function det_cholesky(K::AbstractMatrix)
+    n = size(K, 1)
+    size(K, 2) == n || throw(DimensionMismatch("det_cholesky needs a square matrix"))
+    L = zeros(Float64, n, n)
+    for i in 1:n
+        for j in 1:i
+            s = Float64(K[i, j])
+            for k in 1:(j - 1)
+                s -= L[i, k] * L[j, k]
+            end
+            if i == j
+                (s > 0.0 && isfinite(s)) || return nothing
+                L[i, i] = sqrt(s)
+            else
+                L[i, j] = s / L[j, j]
+            end
+        end
+    end
+    return L
+end
+
+"Solve L x = b for lower-triangular L (forward substitution, fixed order)."
+function det_forward_solve(L::AbstractMatrix, b::AbstractVector)
+    n = length(b)
+    x = Vector{Float64}(undef, n)
+    for i in 1:n
+        s = Float64(b[i])
+        for k in 1:(i - 1)
+            s -= L[i, k] * x[k]
+        end
+        x[i] = s / L[i, i]
+    end
+    return x
+end
+
+"Solve L' x = b for lower-triangular L (back substitution, fixed order)."
+function det_back_solve(L::AbstractMatrix, b::AbstractVector)
+    n = length(b)
+    x = Vector{Float64}(undef, n)
+    for i in n:-1:1
+        s = Float64(b[i])
+        for k in (i + 1):n
+            s -= L[k, i] * x[k]
+        end
+        x[i] = s / L[i, i]
+    end
+    return x
+end
+
+"Left-to-right running sum (explicit loop; the contract is the order, not the Base implementation)."
+function det_cumsum(xs::AbstractVector)
+    out = Vector{Float64}(undef, length(xs))
+    acc = 0.0
+    for i in eachindex(xs)
+        acc += Float64(xs[i])
+        out[i] = acc
     end
     return out
 end

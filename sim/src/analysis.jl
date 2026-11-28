@@ -3,7 +3,7 @@
 # using Statistics provided selectively by BenefutureSim
 
 "Running mean: entry t is the mean of the first t values."
-running_mean(xs) = isempty(xs) ? Float64[] : cumsum(Float64.(xs)) ./ (1:length(xs))
+running_mean(xs) = isempty(xs) ? Float64[] : det_cumsum(xs) ./ (1:length(xs))
 
 """
     settling_step(xs; tol, atol = 0) -> Int

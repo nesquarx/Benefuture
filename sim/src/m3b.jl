@@ -47,7 +47,7 @@ end
 ndomains(p::M3bParams) = length(p.agents[1].skills)
 
 "A domain drawn from a focus (a partition of unity)."
-pick(rng::AbstractRNG, focus) = something(findfirst(>=(rand(rng)), cumsum(focus)), length(focus))
+pick(rng::AbstractRNG, focus) = something(findfirst(>=(rand(rng)), det_cumsum(focus)), length(focus))
 
 """
     run_m3b(p; seed) -> NamedTuple

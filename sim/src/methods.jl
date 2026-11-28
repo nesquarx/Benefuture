@@ -88,7 +88,7 @@ function prim(X::AbstractMatrix, y::AbstractVector; α::Real = 0.05, min_support
                 others = [all(lo[l] <= X[i, l] <= hi[l] for l in 1:k if l != j) for i in 1:n]
                 cand = findall(i -> others[i] && (side == :lower ? X[i, j] < b : X[i, j] > b), 1:n)
                 isempty(cand) && continue
-                sort!(cand; by = i -> X[i, j], rev = side == :lower)
+                sort!(cand; by = i -> X[i, j], rev = side == :lower, alg = MergeSort)
                 take = cand[1:min(length(cand), max(1, ceil(Int, α * cur.n)))]
                 nl, nh = copy(lo), copy(hi)
                 side == :lower ? (nl[j] = minimum(X[take, j])) : (nh[j] = maximum(X[take, j]))
@@ -241,21 +241,27 @@ function gp_fit(Z, y)
     D = sqdist(Z, Z)
     best = nothing
     for ℓ in GP_LENGTHS, η in GP_NUGGETS
-        K = exp.(-D ./ (2ℓ^2)) + (η + 1e-9) * I
-        C = cholesky(Symmetric(K); check = false)
-        issuccess(C) || continue
-        α = C \ ys
-        ll = -0.5dot(ys, α) - sum(log, diag(C.L))
-        (best === nothing || ll > best.ll) && (best = (ll = ll, ℓ = ℓ, η = η, C = C, α = α))
+        K = exp.(-D ./ (2ℓ^2))
+        for i in 1:n
+            K[i, i] += η + 1e-9
+        end
+        L = det_cholesky(K)
+        L === nothing && continue
+        α = det_back_solve(L, det_forward_solve(L, ys))
+        ll = -0.5dot(ys, α) - sum(log, [L[i, i] for i in 1:n])
+        (best === nothing || ll > best.ll) && (best = (ll = ll, ℓ = ℓ, η = η, L = L, α = α))
     end
-    (Z = Z, μ0 = μ0, s = s, ℓ = best.ℓ, η = best.η, C = best.C, α = best.α)
+    (Z = Z, μ0 = μ0, s = s, ℓ = best.ℓ, η = best.η, L = best.L, α = best.α)
 end
 
 function gp_predict(gp, P)
     Ks = exp.(-sqdist(P, gp.Z) ./ (2gp.ℓ^2))
-    μ = gp.μ0 .+ gp.s .* (Ks * gp.α)
-    W = gp.C.L \ permutedims(Ks)
-    σ = gp.s .* sqrt.(max.(1 .- vec(sum(abs2, W; dims = 1)), 1e-12))
+    μ = gp.μ0 .+ gp.s .* det_matvec(Ks, gp.α)
+    σ = Vector{Float64}(undef, size(Ks, 1))
+    for r in 1:size(Ks, 1)
+        w = det_forward_solve(gp.L, Ks[r, :])
+        σ[r] = gp.s * sqrt(max(1 - sum(abs2, w), 1e-12))
+    end
     (μ = μ, σ = σ)
 end
 

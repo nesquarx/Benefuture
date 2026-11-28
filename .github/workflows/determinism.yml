@@ -8,7 +8,8 @@ on:
       - 'BenefutureReference/**'
       - 'BenefutureReference.lean'
       - 'lakefile.toml'
-      - 'sim/src/deterministic.jl'
+      - 'sim/src/**'
+      - 'sim/Project.toml'
       - 'tools/determinism/**'
       - '.github/workflows/determinism.yml'
   workflow_dispatch:
@@ -73,6 +74,7 @@ jobs:
       - name: Probe
         env:
           JULIA_NUM_THREADS: ${{ matrix.threads }}
+          OPENBLAS_NUM_THREADS: ${{ matrix.threads }}
         run: |
           mkdir -p out
           SEEDS="${{ inputs.seeds || '4' }}"
@@ -81,6 +83,7 @@ jobs:
             TAG="${TAG}-gen"
           fi
           julia ${{ matrix.cpu_flag }} --project=sim tools/determinism/trace_probe.jl "out/${TAG}.json" "${SEEDS}" | tee out/summary.txt
+          julia ${{ matrix.cpu_flag }} --project=sim tools/determinism/gp_probe.jl | tee "out/${TAG}.gp"
 
       - uses: actions/upload-artifact@v4
         with:
@@ -109,3 +112,5 @@ jobs:
             echo "=== Checking ${f} against ${BASE} ==="
             python3 tools/determinism/compare.py --check "${BASE}" "${f}"
           done
+          echo "=== GP probe hashes must agree across all variants ==="
+          [ "$(cat artifacts/*/*.gp | sort -u | wc -l)" -eq 1 ] || { cat artifacts/*/*.gp; exit 1; }

@@ -2621,7 +2621,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             end
             need = costs[j]
             self_pay = min(need, max(balance[a, root], 0.0))
-            experts = sort([(e, sum(relevance_parents(e) .* (pms[j] .> 0))) for e in 1:na if e != a]; by = x -> -x[2])
+            experts = sort([(e, sum(relevance_parents(e) .* (pms[j] .> 0))) for e in 1:na if e != a]; by = x -> -x[2], alg = MergeSort)
             pledges = Tuple{Int,Float64}[]
             for (e, r) in experts
                 self_pay + sum(last, pledges; init = 0.0) >= need && break
@@ -3378,7 +3378,7 @@ function recount_μ(tr)
     for m in tr.memory
         m.seq > 0 && push!(events, (m.seq, 2, (st = hasproperty(m, :obs_profile) ? m.obs_profile : m.profile, pm = m.parent_mem)))
     end
-    sort!(events; by = first)
+    sort!(events; by = first, alg = MergeSort)
     for (_, kind, payload) in events
         if kind == 1
             μ[:, payload.leaf] .= payload.init_μ
@@ -3431,7 +3431,7 @@ function recount_models(tr)
             w = @view h[max(1, end - tr.acc_window + 1):end]
             return credence_accuracy([x.credence for x in w], [x.outcome for x in w])
         end
-        issorted(h; by = x -> x.step) || sort!(h; by = x -> x.step)
+        issorted(h; by = x -> x.step) || sort!(h; by = x -> x.step, alg = MergeSort)
         i0 = searchsortedfirst(h, tr.steps - 40 * hl; by = x -> x isa Real ? x : x.step)
         r = [x for x in @view(h[i0:end]) if !disc(x)]
         isempty(r) ? 0.0 : decayed_accuracy([x.credence for x in r], [x.outcome for x in r], [tr.steps - x.step for x in r], hl)

@@ -181,7 +181,7 @@ function calibrate_model_pool(store::QuantileStore; domain = nothing, ensemble_n
         cum_scores = [(t, mean([by_td[(t, pd)] for pd in prev_dates if haskey(by_td, (t, pd))]))
                       for t in teams if any(pd -> haskey(by_td, (t, pd)), prev_dates)]
         isempty(cum_scores) && continue
-        incumbent = first(sort(cum_scores; by = last))[1]
+        incumbent = first(sort(cum_scores; by = x -> (last(x), first(x))))[1]
         haskey(by_td, (incumbent, cur_d)) || continue
         inc_loss = max(by_td[(incumbent, cur_d)], 1e-9)
         for t in teams
@@ -261,14 +261,14 @@ function validate_model_pool(store::QuantileStore; domain = nothing, ensemble_na
     end
     check(!isempty(train_means) && !isempty(test_means), "missing team records in train or test split")
 
-    train_best_team = first(sort(collect(train_means); by = last))[1]
-    test_best_team = first(sort(collect(test_means); by = last))[1]
+    train_best_team = first(sort(collect(train_means); by = x -> (last(x), first(x))))[1]
+    test_best_team = first(sort(collect(test_means); by = x -> (last(x), first(x))))[1]
 
     # Weekly winner sequence on held-out test dates
     weekly_best = String[]
     for d in test_dates
         day_teams = [(t, by_td[(t, d)]) for t in teams if haskey(by_td, (t, d))]
-        !isempty(day_teams) && push!(weekly_best, first(sort(day_teams; by = last))[1])
+        !isempty(day_teams) && push!(weekly_best, first(sort(day_teams; by = x -> (last(x), first(x))))[1])
     end
     turnover = length(weekly_best) >= 2 ?
         mean(weekly_best[i] != weekly_best[i - 1] for i in 2:length(weekly_best)) : 0.0
@@ -345,7 +345,7 @@ function parse_stackexchange_tags_xml(path::AbstractString)
         push!(out, (tag = String(m_name.captures[1]), count = parse(Int, m_cnt.captures[1])))
     end
     check(!isempty(out), "no <row TagName=... Count=... /> entries parsed from $path")
-    sort!(out; by = x -> -x.count)
+    sort!(out; by = x -> (-x.count, x.tag))
     out
 end
 
@@ -430,7 +430,7 @@ function stackexchange_domain_network(answers::Vector{Dict{String,String}}; top_
     end
 
     # Tag formation / novelty rate across chronological split
-    sort!(parsed; by = x -> x[1])
+    sort!(parsed; by = x -> x[1], alg = MergeSort)
     mid = clamp(fld(length(parsed), 2), 1, length(parsed) - 1)
     first_tags = Set{String}()
     second_tags = Set{String}()
@@ -473,7 +473,7 @@ function calibrate_stackexchange_skills(answers::Vector{Dict{String,String}}; rn
         u_multi = Float64[]
         for ((site_k, _), entries) in by_site_user
             site_k == s || continue
-            sort!(entries; by = first)
+            sort!(entries; by = first, alg = MergeSort)
             qs = last.(entries)
             m = mean(qs)
             push!(u_means, m)
@@ -488,7 +488,7 @@ function calibrate_stackexchange_skills(answers::Vector{Dict{String,String}}; rn
         # Track normalized cumulative quality error across chronological answer ranks
         for ((site_k, _), entries) in by_site_user
             site_k == s && length(entries) >= 4 || continue
-            sort!(entries; by = first)
+            sort!(entries; by = first, alg = MergeSort)
             qs = last.(entries) ./ max(med, 1e-9)
             rm = running_mean(qs)
             for k in eachindex(rm)
@@ -548,7 +548,7 @@ function validate_stackexchange_reputation(answers::Vector{Dict{String,String}},
     early_decayed = Dict(hl => Float64[] for hl in half_lives)
     for entries in values(by_user)
         length(entries) >= 2 || continue
-        sort!(entries; by = first)
+        sort!(entries; by = first, alg = MergeSort)
         mid = fld(length(entries), 2)
         eh = [x[2] for x in entries[1:mid]]
         lh = [x[2] for x in entries[(mid + 1):end]]
